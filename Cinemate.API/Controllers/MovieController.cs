@@ -29,11 +29,11 @@ namespace Cinemate.API.Controllers
 			var result = await _movieService.GetMovieTopTenRatedAsync(cancellationToken);
 			return Ok(result);
 		}
-		[Authorize]
 		[HttpGet("{tmdbid}")]
 		public async Task<IActionResult> GetMovieDetails(int tmdbid, CancellationToken cancellationToken)
 		{
-			var result = await _movieService.GetMovieDetailsAsync(User.GetUserId()!,tmdbid, cancellationToken);
+			var userId = User.GetUserId();
+			var result = await _movieService.GetMovieDetailsAsync(userId, tmdbid, cancellationToken);
 			return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
 		}
 		[HttpGet("random-movie")]

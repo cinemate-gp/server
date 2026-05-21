@@ -97,7 +97,7 @@ namespace Cinemate.Service.Services.Movies
 
 			return _mapper.Map<IEnumerable<MoviesTopTenResponse>>(orderBasedOnRating);
 		}
-		public async Task<Result<MovieDetailsResponse>> GetMovieDetailsAsync(string userId, int tmdbid, CancellationToken cancellationToken = default)
+		public async Task<Result<MovieDetailsResponse>> GetMovieDetailsAsync(string? userId, int tmdbid, CancellationToken cancellationToken = default)
 		{
 			var movie = await _context.Movies
 				.Include(m => m.CastMovies)
@@ -110,21 +110,29 @@ namespace Cinemate.Service.Services.Movies
 			if (movie is null || movie.IsDeleted == true)
 				return Result.Failure<MovieDetailsResponse>(MovieErrors.MovieNotFound);
 
-			var likedMovie = await _unitOfWork.Repository<UserLikeMovie>()
-				.GetQueryable()
-				.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+			UserLikeMovie? likedMovie = null;
+			UserRateMovie? userStarMovie = null;
+			UserWatchedMovie? watchedMovie = null;
+			UserMovieWatchList? watcheListMovie = null;
 
-			var userStarMovie = await _unitOfWork.Repository<UserRateMovie>()
-				.GetQueryable()
-				.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+			if (userId is not null)
+			{
+				likedMovie = await _unitOfWork.Repository<UserLikeMovie>()
+					.GetQueryable()
+					.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
 
-			var watchedMovie = await _unitOfWork.Repository<UserWatchedMovie>()
-				.GetQueryable()
-				.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+				userStarMovie = await _unitOfWork.Repository<UserRateMovie>()
+					.GetQueryable()
+					.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
 
-			var watcheListMovie = await _unitOfWork.Repository<UserMovieWatchList>()
-				.GetQueryable()
-				.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+				watchedMovie = await _unitOfWork.Repository<UserWatchedMovie>()
+					.GetQueryable()
+					.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+
+				watcheListMovie = await _unitOfWork.Repository<UserMovieWatchList>()
+					.GetQueryable()
+					.FirstOrDefaultAsync(w => w.UserId == userId && w.TMDBId == tmdbid, cancellationToken);
+			}
 
 			var reviews = await _context.UserReviewMovies
 				.Include(r => r.User)
