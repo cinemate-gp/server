@@ -29,6 +29,7 @@ namespace Cinemate.API.Controllers
 			var result = await _movieService.GetMovieTopTenRatedAsync(cancellationToken);
 			return Ok(result);
 		}
+		[AllowAnonymous]
 		[HttpGet("{tmdbid}")]
 		public async Task<IActionResult> GetMovieDetails(int tmdbid, CancellationToken cancellationToken)
 		{
