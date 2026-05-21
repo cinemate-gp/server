@@ -57,6 +57,7 @@ namespace Cinemate.API
 			RecurringJob.AddOrUpdate<IMovieService>("daily-update-movie-rating", service => service.UpdateMovieRatingsAsync(CancellationToken.None), "0 21 * * *");
 			RecurringJob.AddOrUpdate<IMovieService>("daily-update-movie-rating-early", service => service.UpdateMovieRatingsAsync(CancellationToken.None), "10 1 * * *");
 			app.UseHangfireDashboard("/jobs");
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
