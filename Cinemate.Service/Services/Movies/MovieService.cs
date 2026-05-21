@@ -97,7 +97,7 @@ namespace Cinemate.Service.Services.Movies
 
 			return _mapper.Map<IEnumerable<MoviesTopTenResponse>>(orderBasedOnRating);
 		}
-		public async Task<Result<MovieDetailsResponse>> GetMovieDetailsAsync(string userId, int tmdbid, CancellationToken cancellationToken = default)
+		public async Task<Result<MovieDetailsResponse>> GetMovieDetailsAsync(string? userId, int tmdbid, CancellationToken cancellationToken = default)
 		{
 			var movie = await _context.Movies
 				.Include(m => m.CastMovies)
